@@ -54,7 +54,7 @@ const Post = ({ item }) => {
 };
 
 const App = () => {
-  const [searchQuery, setSearchQuery] = useState('serach');
+  const [searchQuery, setSearchQuery] = useState('');
   const [filteredData, setFilteredData] = useState(data);
 
   const handleSearch = (text) => {
@@ -68,7 +68,7 @@ const App = () => {
     <View style={styles.container}>
       <TextInput
         style={styles.searchBar}
-        placeholder="Search"
+        placeholder="Search based on the posts"
         placeholderTextColor="green"
         value={searchQuery}
         onChangeText={handleSearch}

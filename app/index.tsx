@@ -33,7 +33,7 @@ const LoginForm = () => {
     }
 
     if (email === 'test' && password === 'test') {
-         // Redirect to the profile page
+         
     
       router.push("/auth");
     } else {

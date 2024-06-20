@@ -1,47 +1,65 @@
-import { Button, StyleSheet, Text, View,Image, Pressable, TouchableOpacity } from 'react-native'
-import React from 'react'
+import { CameraView, useCameraPermissions } from 'expo-camera';
+import { useState } from 'react';
+import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-const newtab = () => {
-  const Handlepress=()=>{
-    alert("button is presses");
+export default function App() {
+  const [facing, setFacing] = useState('back');
+  const [permission, requestPermission] = useCameraPermissions();
+
+  if (!permission) {
+    // Camera permissions are still loading.
+    return <View />;
   }
+
+  if (!permission.granted) {
+    // Camera permissions are not granted yet.
+    return (
+      <View style={styles.container}>
+        <Text style={{ textAlign: 'center' }}>We need your permission to show the camera</Text>
+        <Button onPress={requestPermission} title="grant permission" />
+      </View>
+    );
+  }
+
+  function toggleCameraFacing() {
+    setFacing(current => (current === 'back' ? 'front' : 'back'));
+  }
+
   return (
-    <View>
-
-      <TouchableOpacity activeOpacity={0.5}>
-      <Text style={styles.mytext}>TouchableOpacity</Text>
-      </TouchableOpacity>
-    <Pressable style={styles.Press1} onPress={Handlepress}>
-      <Text style={styles.mytext}>Submit</Text>
-      </Pressable>
-      
-      <Button title="Press Me" onPress={()=>alert('Button pressed')}></Button>
-     <Image style={styles.imagestyle}source={{uri:'https://avatar.iran.liara.run/public/boy'}}/>
-    
+    <View style={styles.container}>
+      <CameraView style={styles.camera} facing={facing}>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
+            <Text style={styles.text}>Flip Camera</Text>
+          </TouchableOpacity>
+        </View>
+      </CameraView>
     </View>
-  )
+  );
 }
-
-export default newtab
 
 const styles = StyleSheet.create({
-Press1:
-{
-padding:10,
-backgroundColor:'beige',
-},
-mytext:{
-  flex:1,
-  color:'white',
-  backgroundColor:'darkblue',
-  alignItems:'center',
-  justifyContent:'center',
-  padding:20,
-},
-imagestyle:{
-  width:150,
-  height:140,
-  marginBottom:20,
-}
-
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  camera: {
+    flex: 1,
+  },
+  buttonContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    backgroundColor: 'transparent',
+    margin: 64,
+  },
+  button: {
+    flex: 1,
+    alignSelf: 'flex-end',
+    alignItems: 'center',
+  },
+  text: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: 'white',
+  },
 });
