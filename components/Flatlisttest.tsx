@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { StyleSheet, Text, View, Image, FlatList, TextInput } from 'react-native';
 
 const data = [
@@ -36,7 +36,7 @@ const data = [
   },
 ];
 
-const Post = ({ item }) => {
+const Post = React.memo(({ item }) => {
   return (
     <View style={styles.postContainer}>
       <View style={styles.header}>
@@ -51,18 +51,30 @@ const Post = ({ item }) => {
       </View>
     </View>
   );
-};
+});
 
 const App = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredData, setFilteredData] = useState(data);
 
-  const handleSearch = (text) => {
+  const handleSearch = useCallback((text) => {
     setSearchQuery(text);
     setFilteredData(
       data.filter(item => item.user.username.toLowerCase().includes(text.toLowerCase()))
     );
+  }, []);
+
+  const debounce = (func, delay) => {
+    let debounceTimer;
+    return function() {
+      const context = this;
+      const args = arguments;
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => func.apply(context, args), delay);
+    }
   };
+
+  const debouncedHandleSearch = useMemo(() => debounce(handleSearch, 300), [handleSearch]);
 
   return (
     <View style={styles.container}>
@@ -71,7 +83,7 @@ const App = () => {
         placeholder="Search based on the posts"
         placeholderTextColor="green"
         value={searchQuery}
-        onChangeText={handleSearch}
+        onChangeText={debouncedHandleSearch}
       />
       <FlatList
         data={filteredData}
